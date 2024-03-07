@@ -13,8 +13,6 @@ public class DataUtil {
 	String userInfoPath = "src\\userinfo.txt";
 
 	public String[][] loadUserTransInfo(String date, String userId){
-		// C:\soon\202402\swing\data\2024-03\apple.txt
-		// C:\soon\202402\swing\data\2024-03
 		String transInfoPath = "src\\data\\" + date + "\\" + userId + ".txt";
 		String[][] transInfoArr = new String[0][];
 		int count = 0;
