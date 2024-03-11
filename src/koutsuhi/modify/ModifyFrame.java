@@ -150,10 +150,9 @@ public class ModifyFrame extends JFrame{
 	}
 
 	public String convertLine(String[] line) {
-		String conv_text = Arrays.toString(line);
-		conv_text = conv_text.replace("[", "");
-		conv_text = conv_text.replace("]", "\n");
-		return conv_text;
+	    String conv_text = Arrays.toString(line);
+	    conv_text = conv_text.replace("[", "").replace("]", "\n").replaceAll(" ", "");
+	    return conv_text;
 	}
 
 	public boolean checkInputData() {

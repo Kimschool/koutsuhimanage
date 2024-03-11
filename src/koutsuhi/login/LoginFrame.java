@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import koutsuhi.admin.UserListFrame;
 import koutsuhi.data.DataUtil;
 import koutsuhi.entity.UserInfoEntity;
 import koutsuhi.list.ListFrame;
@@ -21,6 +22,8 @@ import koutsuhi.signup.SignUpFrame;
 public class LoginFrame extends JFrame {
 
 	static public String userId;
+	// 운영자 로그인시 유저ID 보존을 위한 변수
+	static public String subUserId;
 
 	JButton b1 = new JButton("로그인");
 	JButton b2 = new JButton("회원가입");
@@ -97,7 +100,12 @@ public class LoginFrame extends JFrame {
 		if(loginSuccessFlag) {
 			JOptionPane.showMessageDialog(null, "로그인 완료");
 			setVisible(false);
-			new ListFrame();
+			if(userId.equals("admin")) {
+				new UserListFrame();
+			} else {
+				new ListFrame();
+			}
+
 		} else {
 			JOptionPane.showMessageDialog(null, "아이디 패스워드가 존재하지 않습니다.");
 		}

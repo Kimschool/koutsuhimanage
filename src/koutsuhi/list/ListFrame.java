@@ -35,6 +35,8 @@ public class ListFrame extends JFrame{
     String[] columnNames = {"DATE", "D_STATION", "A_STATION", "PARE"};
     JTextField t2 = new JTextField();
     JButton b2 = new JButton("수정하기");
+    JButton b3 = new JButton("출력하기");
+
     int selectedRow;
 
 	public ListFrame() {
@@ -111,19 +113,36 @@ public class ListFrame extends JFrame{
         JButton b1 = new JButton("뒤로가기");
 
 
-        b2.addActionListener(new ActionListener() {
+        if(LoginFrame.userId.equals("admin")) {
+        	b3.addActionListener(new ActionListener() {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				setVisible(false);
-				new ModifyFrame(selectedRow, l1.getText());
-			}
-		});
+				@Override
+				public void actionPerformed(ActionEvent e) {
+        			setVisible(false);
+        			new ModifyFrame(selectedRow, l1.getText());
+				}
+			});
+
+        } else {
+        	b2.addActionListener(new ActionListener() {
+
+        		@Override
+        		public void actionPerformed(ActionEvent e) {
+        			setVisible(false);
+        			new ModifyFrame(selectedRow, l1.getText());
+        		}
+        	});
+        	b2.setEnabled(false);
+        }
+
         JLabel l2 = new JLabel("합계");
-        b2.setEnabled(false);
 
         p2.add(b1);
-        p2.add(b2);
+        if(LoginFrame.userId.equals("admin")) {
+        	p2.add(b3);
+        } else {
+        	p2.add(b2);
+        }
         p2.add(l2);
         p2.add(t2);
 
