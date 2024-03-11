@@ -149,7 +149,7 @@ public class SignUpFrame extends JFrame {
             sb.append(",");
             sb.append(t2.getPassword());
             sb.append(",");
-            sb.append(t4.getText());
+            sb.append(t3.getText());
             sb.append(",");
             sb.append(t4.getText());
             sb.append(",");

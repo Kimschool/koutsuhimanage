@@ -10,10 +10,10 @@ import koutsuhi.entity.UserInfoEntity;
 
 public class DataUtil {
 
-	String userInfoPath = "src\\userinfo.txt";
+	String userInfoPath = "src\\userinfo.csv";
 
 	public String[][] loadUserTransInfo(String date, String userId){
-		String transInfoPath = "src\\data\\" + date + "\\" + userId + ".txt";
+		String transInfoPath = "src\\data\\" + date + "\\" + userId + ".csv";
 		String[][] transInfoArr = new String[0][];
 		int count = 0;
 
