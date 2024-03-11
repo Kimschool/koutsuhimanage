@@ -30,7 +30,7 @@ public class ListFrame extends JFrame{
 	JTable table;
 	JScrollPane scrollPane;
     String[] columnNames = {"DATE", "D_STATION", "A_STATION", "PARE"};
-
+    JTextField t2 = new JTextField();;
 
 	public ListFrame() {
 		setTitle("교통비정산 시스템 - 리스트");
@@ -59,7 +59,6 @@ public class ListFrame extends JFrame{
 		});
 
 
-
 		JPanel p1 = new JPanel();
 		  // 현재 날짜를 가져오기
         LocalDate currentDate = LocalDate.now();
@@ -77,10 +76,7 @@ public class ListFrame extends JFrame{
         DataUtil du = new DataUtil();
         String[][] userInfoArr = du.loadUserTransInfo(formattedDate, LoginFrame.userId);
 
-        int sum = 0;
-        for(int i = 0; i<userInfoArr.length - 1; i++) {
-        	sum+=Integer.parseInt(userInfoArr[i][3]);
-        }
+        calSum(userInfoArr);
 
         model = new DefaultTableModel(userInfoArr, columnNames);
         table = new JTable(model);
@@ -92,8 +88,7 @@ public class ListFrame extends JFrame{
         JButton b1 = new JButton("뒤로가기");
         JButton b2 = new JButton("수정하기");
         JLabel l2 = new JLabel("합계");
-        JTextField t2 = new JTextField(sum + "엔");
-        t2.setEditable(false);
+
         p2.add(b1);
         p2.add(b2);
         p2.add(l2);
@@ -106,6 +101,15 @@ public class ListFrame extends JFrame{
 
 	public static void main(String[] args) {
 		new ListFrame();
+	}
+
+	public void calSum(String[][] userInfoArr) {
+        int sum = 0;
+        for(int i = 0; i<userInfoArr.length; i++) {
+        	sum+=Integer.parseInt(userInfoArr[i][3]);
+        }
+        t2.setText(sum + "엔");
+        t2.setEditable(false);
 	}
 
 	public void reloadData(String direction) {
@@ -143,6 +147,8 @@ public class ListFrame extends JFrame{
         model = new DefaultTableModel(userInfoArr, columnNames);
         // new JTable로 갱신이 안되므로 setModel을 사용하여 갱신한다.
         table.setModel(model);
+
+        calSum(userInfoArr);
 
 	}
 
