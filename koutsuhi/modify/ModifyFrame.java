@@ -5,6 +5,9 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,6 +20,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import koutsuhi.data.DataUtil;
+import koutsuhi.data.DbConn;
 import koutsuhi.list.ListFrame;
 import koutsuhi.login.LoginFrame;
 
@@ -27,21 +31,41 @@ public class ModifyFrame extends JFrame{
 	JTextField t3;
 	JTextField t4;
 
-	public ModifyFrame(int selectedRow, String selectedDate) {
+	String date;
+	String d_station;
+	String a_station;
+	int fare;
+
+	public ModifyFrame(int no) {
 		setTitle("교통비정산 시스템 - 수정");
 		setSize(300,200);
 		setLocationRelativeTo(null);
 
 		setLayout(new BorderLayout());
 
-        DataUtil du = new DataUtil();
-        String[][] userInfoArr = du.loadUserTransInfo(selectedDate, LoginFrame.userId);
+//        DataUtil du = new DataUtil();
+//        String[][] userInfoArr = du.loadUserTransInfo(selectedDate, LoginFrame.userId);
 
-        String[] selectedData = userInfoArr[selectedRow];
-        String date = selectedData[0];
-        String d_station = selectedData[1];
-        String a_station = selectedData[2];
-        String fare = selectedData[3];
+		DbConn dc = new DbConn();
+		try {
+			Connection conn = dc.connection();
+
+			String sql = "select * from transinfo where no = ?";
+
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1, no);
+
+			ResultSet rs = ps.executeQuery();
+
+			while(rs.next()) {
+				date = rs.getString("date");
+				d_station = rs.getString("d_station");
+				a_station = rs.getString("a_station");
+				fare = rs.getInt("fare");
+			}
+
+
+
 
 		JPanel p1 = new JPanel(new GridLayout(4,2));
 
@@ -58,7 +82,7 @@ public class ModifyFrame extends JFrame{
 		p1.add(l3);
 		p1.add(t3);
 		JLabel l4 = new JLabel("금액");
-		t4 = new JTextField(fare);
+		t4 = new JTextField(String.valueOf(fare));
 		p1.add(l4);
 		p1.add(t4);
 
@@ -86,7 +110,7 @@ public class ModifyFrame extends JFrame{
 
 				if(check_success) {
 					// 파일저장
-					modifyData(userInfoArr, selectedRow, selectedDate, false);
+//					modifyData(userInfoArr, selectedRow, selectedDate, false);
 
 				}
 
@@ -99,7 +123,7 @@ public class ModifyFrame extends JFrame{
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				modifyData(userInfoArr, selectedRow, selectedDate, true);
+//				modifyData(userInfoArr, selectedRow, selectedDate, true);
 			}
 		});
 		p2.add(b1);
@@ -109,6 +133,10 @@ public class ModifyFrame extends JFrame{
 		add(p2, BorderLayout.SOUTH);
 
 		setVisible(true);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 
 	}

@@ -105,6 +105,7 @@ public class LoginFrame extends JFrame {
 		if(loginSuccessFlag) {
 			JOptionPane.showMessageDialog(null, "로그인 완료");
 			setVisible(false);
+			userId = id;
 			if(userId.equals("admin")) {
 				new UserListFrame();
 			} else {

@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -18,7 +19,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
-import koutsuhi.data.DataUtil;
+import koutsuhi.list.dao.ListDao;
 import koutsuhi.login.LoginFrame;
 import koutsuhi.modify.ModifyFrame;
 
@@ -32,12 +33,12 @@ public class ListFrame extends JFrame{
 	DefaultTableModel model;
 	JTable table;
 	JScrollPane scrollPane;
-    String[] columnNames = {"DATE", "D_STATION", "A_STATION", "PARE"};
+    String[] columnNames = {"NO", "DATE", "D_STATION", "A_STATION", "PARE"};
     JTextField t2 = new JTextField();
     JButton b2 = new JButton("수정하기");
     JButton b3 = new JButton("출력하기");
 
-    int selectedRow;
+    int no;
 
 	public ListFrame() {
 		setTitle("교통비정산 시스템 - 리스트");
@@ -80,19 +81,25 @@ public class ListFrame extends JFrame{
         p1.add(a2);
         add(p1, BorderLayout.NORTH);
 
-        DataUtil du = new DataUtil();
-        String[][] userInfoArr = du.loadUserTransInfo(formattedDate, LoginFrame.userId);
+		ListDao dao = new ListDao();
+		List<String[]> userInfoArr = dao.getTransInfoList(LoginFrame.userId, formattedDate);
 
         calSum(userInfoArr);
 
+		model = new DefaultTableModel(columnNames, 0) {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false; // Set to true if you want cells to be editable
+			}
+		};
+
+		for(String[] userInfo : userInfoArr) {
+			model.addRow(userInfo);
+		}
+
         // 클릭은 가능하지만 cell변경은 불가능하게 해야함
         // isCellEditable을 아래와 같이 오버
-        model = new DefaultTableModel(userInfoArr, columnNames) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false; // Set to true if you want cells to be editable
-            }
-        };
+
         table = new JTable(model);
 
         // 테이블에 ListSelectionListener 추가
@@ -100,8 +107,9 @@ public class ListFrame extends JFrame{
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 // 테이블에서 특정 행이 선택되었을 때의 동작
-                selectedRow = table.getSelectedRow();
-                b2.setEnabled(selectedRow != -1); // 선택된 행이 있으면 버튼 활성화, 아니면 비활성화
+                Object obj = table.getValueAt(table.getSelectedRow(), 0);
+				no = Integer.parseInt((String) obj);
+                b2.setEnabled(true); // 선택된 행이 있으면 버튼 활성화, 아니면 비활성화
             }
         });
 
@@ -119,7 +127,7 @@ public class ListFrame extends JFrame{
 				@Override
 				public void actionPerformed(ActionEvent e) {
         			setVisible(false);
-        			new ModifyFrame(selectedRow, l1.getText());
+        			new ModifyFrame(no);
 				}
 			});
 
@@ -129,7 +137,7 @@ public class ListFrame extends JFrame{
         		@Override
         		public void actionPerformed(ActionEvent e) {
         			setVisible(false);
-        			new ModifyFrame(selectedRow, l1.getText());
+        			new ModifyFrame(no);
         		}
         	});
         	b2.setEnabled(false);
@@ -155,10 +163,10 @@ public class ListFrame extends JFrame{
 		new ListFrame();
 	}
 
-	public void calSum(String[][] userInfoArr) {
+	public void calSum(List<String[]> userInfoArr) {
         int sum = 0;
-        for(int i = 0; i<userInfoArr.length; i++) {
-        	sum+=Integer.parseInt(userInfoArr[i][3]);
+        for(String[] userInfo : userInfoArr) {
+        	sum+=Integer.parseInt(userInfo[4]);
         }
         t2.setText(sum + "엔");
         t2.setEditable(false);
@@ -193,10 +201,15 @@ public class ListFrame extends JFrame{
 
 		l1.setText(year + HIPEN + month);
 
-        DataUtil du = new DataUtil();
-        String[][] userInfoArr = du.loadUserTransInfo(l1.getText(), LoginFrame.userId);
+//        DataUtil du = new DataUtil();
+//        String[][] userInfoArr = du.loadUserTransInfo(l1.getText(), LoginFrame.userId);
 
-        model = new DefaultTableModel(userInfoArr, columnNames);
+		ListDao dao = new ListDao();
+		List<String[]> userInfoArr = dao.getTransInfoList(LoginFrame.userId, l1.getText());
+
+		calSum(userInfoArr);
+
+		model.setDataVector(userInfoArr.toArray(new Object[0][]), columnNames);
         // new JTable로 갱신이 안되므로 setModel을 사용하여 갱신한다.
         table.setModel(model);
 
